@@ -1,0 +1,10 @@
+*.exe
+*.exe*
+*.log
+dev.yaml
+.idea/
+.vscode/
+config.yml
+tmp
+.air.toml
+*.out
