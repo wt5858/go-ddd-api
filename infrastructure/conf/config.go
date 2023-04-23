@@ -40,12 +40,23 @@ type SwaggerConfig struct {
 	SwitchConfig bool
 }
 
+type LogConfig struct {
+	LogFileDir string
+	AppName    string
+	Platform   string
+	MaxSize    int //文件多大开始切分
+	MaxBackups int //保留文件个数
+	MaxAge     int //文件保留最大实际
+	Level      string
+}
+
 type Config struct {
 	App
 	MySQLConf
 	RedisConf
 	LimiterConf
 	SwaggerConfig
+	LogConfig
 }
 
 func init() {
@@ -84,6 +95,15 @@ var Module = fx.Provide(func() *Config {
 		},
 		SwaggerConfig{
 			SwitchConfig: true,
+		},
+		LogConfig{
+			LogFileDir: GetKeyByConf("log.logFileDir", "str").(string),
+			AppName:    GetKeyByConf("log.appName", "str").(string),
+			Platform:   GetKeyByConf("log.platform", "str").(string),
+			MaxSize:    GetKeyByConf("log.maxSize", "int").(int),
+			MaxBackups: GetKeyByConf("log.maxBackups", "int").(int),
+			MaxAge:     GetKeyByConf("log.maxAge", "int").(int),
+			Level:      GetKeyByConf("log.level", "str").(string),
 		},
 	}
 })
