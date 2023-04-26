@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"go.uber.org/zap/zapcore"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 var (
@@ -25,11 +26,15 @@ var (
 var Module = fx.Provide(NewLogger)
 
 type Logger struct {
-	*zap.Logger
+	ZapLogger *zap.Logger
 	sync.RWMutex
-	Opts      *conf.Config
-	zapConfig zap.Config
-	inited    bool
+	Opts                      *conf.Config
+	zapConfig                 zap.Config
+	inited                    bool
+	SlowThreshold             time.Duration
+	LogLevel                  gormLogger.LogLevel
+	SkipCallerLookup          bool
+	IgnoreRecordNotFoundError bool
 }
 
 func init() {
@@ -42,13 +47,13 @@ func NewLogger(cf *conf.Config) *Logger {
 	l.Lock()
 	defer l.Unlock()
 	if l.inited {
-		l.Info("[initLogger] logger Inited")
+		l.ZapLogger.Info("[initLogger] logger Inited")
 		return nil
 	}
 	l.Opts = cf
 	l.loadCfg()
 	l.init()
-	l.Info("[initLogger] zap plugin initializing completed")
+	l.ZapLogger.Info("[initLogger] zap plugin initializing completed")
 	l.inited = true
 	return l
 }
@@ -56,11 +61,11 @@ func NewLogger(cf *conf.Config) *Logger {
 func (l *Logger) init() {
 	l.setSyncers()
 	var err error
-	l.Logger, err = l.zapConfig.Build(l.cores())
+	l.ZapLogger, err = l.zapConfig.Build(l.cores())
 	if err != nil {
 		panic(err)
 	}
-	defer l.Logger.Sync()
+	defer l.ZapLogger.Sync()
 }
 
 func (l *Logger) GetLevel() (level zapcore.Level) {
@@ -123,6 +128,8 @@ func (l *Logger) loadCfg() {
 	if l.Opts.MaxAge == 0 {
 		l.Opts.MaxAge = 30
 	}
+	l.SlowThreshold = time.Second
+	l.LogLevel = gormLogger.Info
 }
 
 func (l *Logger) cores() zap.Option {

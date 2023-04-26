@@ -4,6 +4,7 @@ import (
 	router "github.com/wt5858/go-ddd-api/adpter/http/routers"
 	"github.com/wt5858/go-ddd-api/infrastructure/conf"
 	"github.com/wt5858/go-ddd-api/infrastructure/pkg/core"
+	"github.com/wt5858/go-ddd-api/infrastructure/pkg/database"
 	"github.com/wt5858/go-ddd-api/infrastructure/pkg/log"
 	"go.uber.org/fx"
 )
@@ -11,6 +12,7 @@ import (
 var Module = fx.Options(
 	conf.Module,
 	log.Module,
+	database.Module,
 	core.Module,   // http
 	router.Module, // router handle
 )
