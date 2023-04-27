@@ -40,6 +40,19 @@ type SwaggerConfig struct {
 	SwitchConfig bool
 }
 
+type EsConfig struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+}
+
+type RocketMqConfig struct {
+	Host  string
+	Port  string
+	Group string
+}
+
 type LogConfig struct {
 	LogFileDir string
 	AppName    string
@@ -56,6 +69,8 @@ type Config struct {
 	RedisConf
 	LimiterConf
 	SwaggerConfig
+	EsConfig
+	RocketMqConfig
 	LogConfig
 }
 
@@ -95,6 +110,17 @@ var Module = fx.Provide(func() *Config {
 		},
 		SwaggerConfig{
 			SwitchConfig: true,
+		},
+		EsConfig{
+			Host:     GetKeyByConf("es.host", "str").(string),
+			Port:     GetKeyByConf("es.port", "str").(string),
+			Username: GetKeyByConf("es.username", "str").(string),
+			Password: GetKeyByConf("es.password", "str").(string),
+		},
+		RocketMqConfig{
+			Host:  GetKeyByConf("rocket_mq.host", "str").(string),
+			Port:  GetKeyByConf("rocket_mq.port", "str").(string),
+			Group: GetKeyByConf("rocket_mq.group", "str").(string),
 		},
 		LogConfig{
 			LogFileDir: GetKeyByConf("log.logFileDir", "str").(string),
