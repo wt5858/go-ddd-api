@@ -1,6 +1,8 @@
 package log
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -66,6 +68,14 @@ func (l *Logger) init() {
 		panic(err)
 	}
 	defer l.ZapLogger.Sync()
+}
+
+func GetLogger() *Logger {
+	if l == nil {
+		fmt.Println("Please initialize the log service first")
+		return nil
+	}
+	return l
 }
 
 func (l *Logger) GetLevel() (level zapcore.Level) {
@@ -159,6 +169,28 @@ func (l *Logger) cores() zap.Option {
 	return zap.WrapCore(func(c zapcore.Core) zapcore.Core {
 		return zapcore.NewTee(cores...)
 	})
+}
+
+func (l *Logger) GetCtx(ctx context.Context) *zap.Logger {
+	log, ok := ctx.Value(l.Opts.CtxKey).(*zap.Logger)
+	if ok {
+		return log
+	}
+	return l.ZapLogger
+}
+
+func (l *Logger) WithContext(ctx context.Context) *zap.Logger {
+	log, ok := ctx.Value(l.Opts.CtxKey).(*zap.Logger)
+	if ok {
+		return log
+	}
+	return l.ZapLogger
+}
+
+func (l *Logger) AddCtx(ctx context.Context, field ...zap.Field) (context.Context, *zap.Logger) {
+	log := l.ZapLogger.With(field...)
+	ctx = context.WithValue(ctx, l.Opts.CtxKey, log)
+	return ctx, log
 }
 
 func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {

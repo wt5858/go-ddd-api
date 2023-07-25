@@ -8,6 +8,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.7.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/gomodule/redigo v1.8.9
+	github.com/google/uuid v1.1.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/spf13/viper v1.15.0
 	go.uber.org/fx v1.19.2

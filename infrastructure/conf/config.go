@@ -61,6 +61,7 @@ type LogConfig struct {
 	MaxBackups int //保留文件个数
 	MaxAge     int //文件保留最大实际
 	Level      string
+	CtxKey     string
 }
 
 type Config struct {
@@ -130,6 +131,7 @@ var Module = fx.Provide(func() *Config {
 			MaxBackups: GetKeyByConf("log.maxBackups", "int").(int),
 			MaxAge:     GetKeyByConf("log.maxAge", "int").(int),
 			Level:      GetKeyByConf("log.level", "str").(string),
+			CtxKey:     GetKeyByConf("log.ctxKey", "str").(string),
 		},
 	}
 })
